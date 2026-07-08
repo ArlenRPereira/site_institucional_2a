@@ -1,0 +1,13 @@
+{
+  "name": "infra",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.27.0",
+  "scripts": {
+    "db:types": "supabase gen types typescript --local > .claude/types/database.ts && cp .claude/types/database.ts ../produto-contracts/src/types/database.ts",
+    "db:shell": "psql $SUPABASE_DB_URL"
+  },
+  "devDependencies": {
+    "supabase": "^2.0.0"
+  }
+}

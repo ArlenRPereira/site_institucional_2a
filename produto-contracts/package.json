@@ -1,0 +1,29 @@
+{
+  "name": "@org/shared-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.27.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./types/database": {
+      "types": "./dist/types/database.d.ts",
+      "default": "./dist/types/database.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "watch": "tsc --outDir dist --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.4.5"
+  }
+}

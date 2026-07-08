@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "model": "claude-sonnet-4-6",
+
+  "permissions": {
+    "allow": [
+      "Read",
+
+      "Bash(supabase migration new *)",
+      "Bash(supabase migration list)",
+      "Bash(supabase migration up)",
+      "Bash(supabase db diff *)",
+      "Bash(supabase start)",
+      "Bash(supabase stop)",
+      "Bash(supabase status)",
+      "Bash(supabase gen types *)",
+
+      "Bash(pnpm db:types)",
+      "Bash(pnpm db:shell)",
+      "Bash(pnpm *)",
+
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git fetch *)",
+      "Bash(git stash *)",
+
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+
+      "mcp__filesystem__read_file",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__search_files",
+      "mcp__git__git_status",
+      "mcp__git__git_diff",
+      "mcp__git__git_log",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__list_tables",
+      "mcp__github__get_issue",
+      "mcp__github__list_issues",
+      "mcp__github__create_pull_request"
+    ],
+
+    "ask": [
+      "Bash(supabase db reset)",
+      "Bash(supabase link *)",
+      "Bash(supabase db push *)",
+      "Bash(git push *)",
+      "Bash(rm *)",
+      "Bash(mv *)",
+      "Bash(cp *)"
+    ],
+
+    "deny": [
+      "Bash(rm -rf *)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/secrets/**)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "mcp__supabase__delete_table",
+      "mcp__github__delete_repository",
+      "mcp__github__delete_file"
+    ]
+  },
+
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '\\a'"
+          }
+        ]
+      }
+    ]
+  },
+
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

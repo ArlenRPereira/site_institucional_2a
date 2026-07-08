@@ -1,0 +1,97 @@
+{
+  "name": "Formulário de Contato - 2A Desenvolvimento",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Formulário de Contato → Email\n\n**Como usar:**\n1. Configure uma credencial SMTP no node \"Enviar Email\" (Gmail, SendGrid, etc).\n2. No node \"Enviar Email\", ajuste o campo \"From Email\" para um remetente válido do seu domínio/provedor.\n3. Ative o workflow. A URL do Webhook (aba do node Webhook) é o endpoint que seu formulário (frontend) deve chamar via POST.\n4. Envie o corpo da requisição como JSON com os campos: nome, email, telefone, empresa, interesse, mensagem.\n\n**Teste:** use a URL de teste (Test URL) do node Webhook enquanto edita; depois de ativar o workflow, use a Production URL.",
+        "height": 340,
+        "width": 380
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000001",
+      "name": "Instruções",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [220, -40]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contato-2ad",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000002",
+      "name": "Webhook - Formulário",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "contato-2ad-webhook"
+    },
+    {
+      "parameters": {
+        "fromEmail": "site@2adesenvolvimento.com.br",
+        "toEmail": "contato@2adesenvolvimento.com.br",
+        "replyTo": "={{ $json.body.email }}",
+        "subject": "=Novo contato do site — {{ $json.body.nome }} ({{ $json.body.interesse }})",
+        "emailFormat": "html",
+        "html": "=<h2>Novo contato recebido pelo site</h2>\n<p><strong>Nome:</strong> {{ $json.body.nome }}</p>\n<p><strong>Email:</strong> {{ $json.body.email }}</p>\n<p><strong>Telefone:</strong> {{ $json.body.telefone }}</p>\n<p><strong>Empresa:</strong> {{ $json.body.empresa }}</p>\n<p><strong>Interesse:</strong> {{ $json.body.interesse }}</p>\n<p><strong>Mensagem:</strong><br>{{ $json.body.mensagem.replace(/\\n/g, '<br>') }}</p>",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000003",
+      "name": "Enviar Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [480, 300],
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Mensagem enviada com sucesso!\"\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000004",
+      "name": "Responder Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Webhook - Formulário": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email": {
+      "main": [
+        [
+          {
+            "node": "Responder Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

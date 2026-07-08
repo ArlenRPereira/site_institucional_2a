@@ -1,0 +1,326 @@
+{
+  "name": "Formulário de Contato - 2A Desenvolvimento (com proteções)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Formulário de Contato → Email (com proteções)\n\n**Pré-requisitos no frontend (Next.js estático):**\n1. Adicione um campo oculto no formulário, invisível pra humanos mas visível pra bots automáticos:\n   `<input type=\"text\" name=\"website\" style=\"display:none\" tabindex=\"-1\" autocomplete=\"off\" />`\n   Envie o valor desse campo como `website` no JSON do POST. Se vier preenchido, é bot.\n2. Adicione o widget do **Cloudflare Turnstile** (gratuito) no formulário. Ao enviar, inclua o token gerado como campo `captchaToken` no JSON do POST.\n   Docs: https://developers.cloudflare.com/turnstile/\n\n**Configuração no n8n:**\n1. Em Settings → Variables, crie a variável `TURNSTILE_SECRET_KEY` com a Secret Key do seu widget Turnstile (se seu plano/instância não tiver \"Variables\", cole a chave direto no node \"Verificar Captcha\", campo `secret\").\n2. Configure a credencial SMTP no node \"Enviar Email\" (veja instruções da v1).\n3. Ative o workflow e aponte o formulário do site pra Production URL do node Webhook.\n\n**Fluxo:** Webhook → checa honeypot → valida captcha na Cloudflare → sanitiza e valida os campos (email, enum, tamanho, remove quebras de linha) → envia email → responde ao frontend.\n\nSe algum node IF não abrir exatamente com essas condições (por causa da versão do n8n), é só recriar a condição pela UI — a lógica está descrita nos títulos dos nodes.",
+        "height": 460,
+        "width": 460
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000001",
+      "name": "Instruções",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, -300]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contato-2ad",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000002",
+      "name": "Webhook - Formulário",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300],
+      "webhookId": "contato-2ad-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-honeypot",
+              "leftValue": "={{ $json.body.website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000003",
+      "name": "Honeypot Vazio? (humano)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "secret",
+              "value": "={{ $vars.TURNSTILE_SECRET_KEY }}"
+            },
+            {
+              "name": "response",
+              "value": "={{ $json.body.captchaToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000004",
+      "name": "Verificar Captcha",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 180]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-captcha",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000005",
+      "name": "Captcha Válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [940, 180]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const body = $input.item.json.body || {};\n\nfunction limparQuebrasDeLinha(valor) {\n  return String(valor || '').replace(/[\\r\\n]+/g, ' ').trim();\n}\n\nfunction escapeHtml(valor) {\n  return String(valor || '')\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n}\n\nconst nome = limparQuebrasDeLinha(body.nome).slice(0, 200);\nconst email = limparQuebrasDeLinha(body.email).slice(0, 200);\nconst telefone = limparQuebrasDeLinha(body.telefone).slice(0, 50);\nconst empresa = limparQuebrasDeLinha(body.empresa).slice(0, 200);\nconst interesse = limparQuebrasDeLinha(body.interesse);\nconst mensagem = String(body.mensagem || '').slice(0, 5000);\n\nconst errors = [];\n\nif (!nome) errors.push('Nome é obrigatório.');\n\nconst emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nif (!email || !emailRegex.test(email)) errors.push('Email inválido.');\n\nif (!mensagem || mensagem.trim().length < 5) errors.push('Mensagem é obrigatória.');\n\nconst interesseOptions = ['Tecnologia, SaaS e IA', 'ESG e Projetos Sociais', 'Ambos', 'Outro'];\nif (!interesseOptions.includes(interesse)) errors.push('Interesse inválido.');\n\nreturn {\n  valid: errors.length === 0,\n  errors,\n  data: {\n    nome: escapeHtml(nome),\n    email: escapeHtml(email),\n    telefone: escapeHtml(telefone),\n    empresa: escapeHtml(empresa),\n    interesse: escapeHtml(interesse),\n    mensagem: escapeHtml(mensagem).replace(/\\n/g, '<br>')\n  }\n};"
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000006",
+      "name": "Validar e Sanitizar Campos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1180, 60]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-validacao",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000007",
+      "name": "Dados Válidos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1420, 60]
+    },
+    {
+      "parameters": {
+        "fromEmail": "site@2adesenvolvimento.com.br",
+        "toEmail": "contato@2adesenvolvimento.com.br",
+        "replyTo": "={{ $json.data.email }}",
+        "subject": "=Novo contato do site — {{ $json.data.nome }} ({{ $json.data.interesse }})",
+        "emailFormat": "html",
+        "html": "=<h2>Novo contato recebido pelo site</h2>\n<p><strong>Nome:</strong> {{ $json.data.nome }}</p>\n<p><strong>Email:</strong> {{ $json.data.email }}</p>\n<p><strong>Telefone:</strong> {{ $json.data.telefone }}</p>\n<p><strong>Empresa:</strong> {{ $json.data.empresa }}</p>\n<p><strong>Interesse:</strong> {{ $json.data.interesse }}</p>\n<p><strong>Mensagem:</strong><br>{{ $json.data.mensagem }}</p>",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000008",
+      "name": "Enviar Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1660, -60],
+      "credentials": {
+        "smtp": {
+          "id": "",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Mensagem enviada com sucesso!\"\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0000-4000-8000-000000000009",
+      "name": "Responder Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1900, 120]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"message\": \"Verificação de segurança falhou. Recarregue a página e tente novamente.\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "a1b2c3d4-0000-4000-8000-00000000000a",
+      "name": "Responder Erro Captcha",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1180, 340]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": false,\n  \"message\": {{ JSON.stringify($json.errors.join(' ')) }}\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "a1b2c3d4-0000-4000-8000-00000000000b",
+      "name": "Responder Erro Validação",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1660, 220]
+    }
+  ],
+  "connections": {
+    "Webhook - Formulário": {
+      "main": [
+        [
+          {
+            "node": "Honeypot Vazio? (humano)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Honeypot Vazio? (humano)": {
+      "main": [
+        [
+          {
+            "node": "Verificar Captcha",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Captcha": {
+      "main": [
+        [
+          {
+            "node": "Captcha Válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Captcha Válido?": {
+      "main": [
+        [
+          {
+            "node": "Validar e Sanitizar Campos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Erro Captcha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar e Sanitizar Campos": {
+      "main": [
+        [
+          {
+            "node": "Dados Válidos?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados Válidos?": {
+      "main": [
+        [
+          {
+            "node": "Enviar Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Erro Validação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Email": {
+      "main": [
+        [
+          {
+            "node": "Responder Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

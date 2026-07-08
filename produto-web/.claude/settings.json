@@ -1,0 +1,119 @@
+{
+  "model": "claude-opus-4-7",
+
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run type-check)",
+      "Bash(npm run analyze)",
+      "Bash(npm run types:supabase)",
+      "Bash(npm ci)",
+      "Bash(npm ci --omit=dev)",
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(npx supabase gen types *)",
+      "Bash(npx supabase db *)",
+      "Bash(npx supabase migration *)",
+      "Bash(npx supabase status)",
+      "Bash(npx shadcn@latest add *)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git branch *)",
+      "Bash(git fetch *)",
+      "Bash(git stash list)",
+      "Bash(git show *)",
+      "Bash(pm2 status)",
+      "Bash(pm2 list)",
+      "Bash(pm2 logs * --lines *)",
+      "Bash(pm2 monit)",
+      "Bash(nginx -t)",
+      "Bash(systemctl status nginx)",
+      "Bash(systemctl status certbot*)",
+      "Bash(cat .env.example)",
+      "Bash(cat next.config.ts)",
+      "Bash(cat tsconfig.json)",
+      "Bash(cat package.json)",
+      "Bash(cat ecosystem.config.cjs)",
+      "Bash(ls *)",
+      "Bash(find src -name *)",
+      "Bash(grep -r * src/)"
+    ],
+
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(sudo rm *)",
+      "Bash(git push --force*)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -fd *)",
+      "Bash(npx supabase db reset)",
+      "Bash(pm2 delete *)",
+      "Bash(pm2 kill)",
+      "Bash(systemctl stop nginx)",
+      "Bash(systemctl stop pm2*)",
+      "Bash(cat .env*)",
+      "Bash(cat .env.production)",
+      "Bash(cat .env.local)",
+      "Bash(printenv)",
+      "Bash(env)"
+    ]
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[pre-tool] Bash: '\"$CLAUDE_TOOL_INPUT\" >> /tmp/claude-audit.log 2>&1 || true"
+          }
+        ]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; if [[ \"$FILE\" == *.ts || \"$FILE\" == *.tsx ]]; then npm run type-check 2>&1 | tail -5; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(npm run build)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[post-build] '$(date '+%Y-%m-%d %H:%M:%S') >> /tmp/claude-builds.log 2>&1 || true"
+          }
+        ]
+      }
+    ],
+
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '\\a'"
+          }
+        ]
+      }
+    ]
+  },
+
+  "env": {
+    "NODE_ENV": "development",
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  },
+
+  "cleanupPeriodDays": 30
+}

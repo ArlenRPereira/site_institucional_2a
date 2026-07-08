@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "model": "claude-sonnet-4-6",
+
+  "permissions": {
+    "defaultMode": "acceptEdits",
+
+    "allow": [
+      "Read",
+
+      "Bash(pnpm dev)",
+      "Bash(pnpm dev:debug)",
+      "Bash(pnpm build)",
+      "Bash(pnpm start)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm lint:fix)",
+      "Bash(pnpm test)",
+      "Bash(pnpm test:watch)",
+      "Bash(pnpm test:coverage)",
+      "Bash(pnpm db:types)",
+      "Bash(pnpm docker:build)",
+      "Bash(pnpm docker:up)",
+      "Bash(pnpm install)",
+      "Bash(pnpm add *)",
+
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git stash *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git fetch *)",
+
+      "Bash(node *)",
+      "Bash(npx tsc *)",
+      "Bash(npx jest *)",
+      "Bash(npx @redocly/cli *)",
+      "Bash(supabase gen types *)",
+      "Bash(supabase status)",
+
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(cat *)",
+
+      "mcp__filesystem__read_file",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__search_files",
+      "mcp__git__git_status",
+      "mcp__git__git_diff",
+      "mcp__git__git_log",
+      "mcp__git__git_commit",
+      "mcp__github__get_issue",
+      "mcp__github__list_issues",
+      "mcp__github__create_pull_request",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__list_tables"
+    ],
+
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git push --force *)",
+      "Bash(pnpm publish)",
+      "Bash(npm publish *)",
+      "Bash(rm *)",
+      "Bash(rmdir *)",
+      "Bash(mv *)",
+      "Bash(printenv *)",
+      "Bash(env)"
+    ],
+
+    "deny": [
+      "Bash(rm -rf *)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/*.keystore)",
+      "Read(**/*.pem)",
+      "Write(.env)",
+      "Write(.env.*)",
+      "mcp__github__delete_repository",
+      "mcp__github__delete_file",
+      "mcp__supabase__delete_table"
+    ]
+  },
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm typecheck 2>&1 | tail -5"
+          },
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATH\"; if [[ \"$FILE\" == *.ts ]]; then npx prettier --write \"$FILE\" 2>/dev/null; fi"
+          }
+        ]
+      }
+    ],
+
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "scripts/block-dangerous.sh"
+          }
+        ]
+      }
+    ],
+
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '\\a'"
+          }
+        ]
+      }
+    ]
+  },
+
+  "env": {
+    "NODE_ENV": "development"
+  },
+
+  "includeCoAuthoredBy": true
+}

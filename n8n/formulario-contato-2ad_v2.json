@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Formulário de Contato → Email (com proteções)\n\n**Pré-requisitos no frontend (Next.js estático):**\n1. Adicione um campo oculto no formulário, invisível pra humanos mas visível pra bots automáticos:\n   `<input type=\"text\" name=\"website\" style=\"display:none\" tabindex=\"-1\" autocomplete=\"off\" />`\n   Envie o valor desse campo como `website` no JSON do POST. Se vier preenchido, é bot.\n2. Adicione o widget do **Cloudflare Turnstile** (gratuito) no formulário. Ao enviar, inclua o token gerado como campo `captchaToken` no JSON do POST.\n   Docs: https://developers.cloudflare.com/turnstile/\n\n**Configuração no n8n:**\n1. Em Settings → Variables, crie a variável `TURNSTILE_SECRET_KEY` com a Secret Key do seu widget Turnstile (se seu plano/instância não tiver \"Variables\", cole a chave direto no node \"Verificar Captcha\", campo `secret\").\n2. Configure a credencial SMTP no node \"Enviar Email\" (veja instruções da v1).\n3. Ative o workflow e aponte o formulário do site pra Production URL do node Webhook.\n\n**Fluxo:** Webhook → checa honeypot → valida captcha na Cloudflare → sanitiza e valida os campos (email, enum, tamanho, remove quebras de linha) → envia email → responde ao frontend.\n\nSe algum node IF não abrir exatamente com essas condições (por causa da versão do n8n), é só recriar a condição pela UI — a lógica está descrita nos títulos dos nodes.",
+        "content": "## Formulário de Contato → Email (com proteções)\n\n**⚠️ Captcha (Cloudflare Turnstile) temporariamente removido do fluxo ativo.** Os nodes \"Verificar Captcha\" e \"Captcha Válido?\" ficaram desabilitados e desconectados (não excluídos — dá pra religar reconectando a saída \"humano\" do node \"Honeypot Vazio?\" de volta em \"Verificar Captcha\" e reativando os 2 nodes). O node \"Responder Erro Captcha\" foi excluído (o n8n rejeita, com o erro \"Unused Respond to Webhook node found in the workflow\", um respondToWebhook órfão mesmo que desabilitado) — está preservado no histórico do git deste arquivo caso precise recriá-lo.\n\n**Pré-requisitos no frontend (Next.js estático):**\n1. Adicione um campo oculto no formulário, invisível pra humanos mas visível pra bots automáticos:\n   `<input type=\"text\" name=\"website\" style=\"display:none\" tabindex=\"-1\" autocomplete=\"off\" />`\n   Envie o valor desse campo como `website` no JSON do POST. Se vier preenchido, é bot.\n2. (Desativado por ora) Widget do **Cloudflare Turnstile** — ao reativar, inclua o token gerado como campo `captchaToken` no JSON do POST. Docs: https://developers.cloudflare.com/turnstile/\n\n**Configuração no n8n:**\n1. (Desativado por ora) Em Settings → Variables, crie a variável `TURNSTILE_SECRET_KEY` com a Secret Key do seu widget Turnstile (se seu plano/instância não tiver \"Variables\", cole a chave direto no node \"Verificar Captcha\", campo `secret`).\n2. Configure a credencial SMTP no node \"Enviar Email\" (veja instruções da v1).\n3. Ative o workflow e aponte o formulário do site pra Production URL do node Webhook.\n\n**Fluxo atual:** Webhook → checa honeypot → sanitiza e valida os campos (email, enum, tamanho, remove quebras de linha) → envia email → responde ao frontend.\n\nSe algum node IF não abrir exatamente com essas condições (por causa da versão do n8n), é só recriar a condição pela UI — a lógica está descrita nos títulos dos nodes.",
         "height": 460,
         "width": 460
       },
@@ -81,7 +81,8 @@
       "name": "Verificar Captcha",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [700, 180]
+      "position": [700, 180],
+      "disabled": true
     },
     {
       "parameters": {
@@ -110,7 +111,8 @@
       "name": "Captcha Válido?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [940, 180]
+      "position": [940, 180],
+      "disabled": true
     },
     {
       "parameters": {
@@ -189,20 +191,6 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"success\": false,\n  \"message\": \"Verificação de segurança falhou. Recarregue a página e tente novamente.\"\n}",
-        "options": {
-          "responseCode": 400
-        }
-      },
-      "id": "a1b2c3d4-0000-4000-8000-00000000000a",
-      "name": "Responder Erro Captcha",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [1180, 340]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
         "responseBody": "={\n  \"success\": false,\n  \"message\": {{ JSON.stringify($json.errors.join(' ')) }}\n}",
         "options": {
           "responseCode": 400
@@ -231,35 +219,6 @@
       "main": [
         [
           {
-            "node": "Verificar Captcha",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Responder Sucesso",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Verificar Captcha": {
-      "main": [
-        [
-          {
-            "node": "Captcha Válido?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Captcha Válido?": {
-      "main": [
-        [
-          {
             "node": "Validar e Sanitizar Campos",
             "type": "main",
             "index": 0
@@ -267,7 +226,7 @@
         ],
         [
           {
-            "node": "Responder Erro Captcha",
+            "node": "Responder Sucesso",
             "type": "main",
             "index": 0
           }

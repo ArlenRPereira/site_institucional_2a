@@ -34,7 +34,11 @@ mensagem: string — min 1, max 2000
 
 **Integração — Webhook n8n:**
 
-Ao submeter o formulário de contato, o frontend envia os dados para um Route Handler próprio do `produto-web` (`src/app/api/webhooks/contato/route.ts` — camada "API INTERNA" do projeto), que repassa a requisição ao workflow n8n responsável por validar (honeypot + captcha), sanitizar e encaminhar o contato por e-mail (ver `n8n/formulario-contato-2ad_v2.json`). O n8n nunca é chamado diretamente do browser, para não expor o token de autenticação no bundle client-side.
+Ao submeter o formulário de contato, o frontend envia os dados para um Route Handler próprio do `produto-web` (`src/app/api/webhooks/contato/route.ts` — camada "API INTERNA" do projeto), que valida o payload com o `ContactFormSchema` (Zod) e repassa a requisição ao workflow n8n ativo, responsável por encaminhar o contato por e-mail. O n8n nunca é chamado diretamente do browser, para não expor o token de autenticação no bundle client-side.
+
+**Workflow ativo em produção:** `n8n/formulario-contato-2ad.json` (v1, simples) — `Webhook → Enviar Email → Responder Sucesso`. Não há honeypot, captcha nem sanitização/validação adicional no lado do n8n; a única validação de payload nessa integração é a do Route Handler (Zod, `ContactFormSchema`) antes do repasse. Como o node "Enviar Email" interpola os campos (`nome`, `mensagem` etc.) direto no HTML do e-mail sem escapar, existe um risco baixo de HTML injection no corpo do e-mail recebido — aceitável para o volume/risco atual, mas vale revisitar se o formulário passar a receber tráfego não confiável em escala.
+
+> `n8n/formulario-contato-2ad_v2.json` existe no repositório como uma versão mais robusta (honeypot + sanitização server-side dos campos) para adoção futura, caso o v1 se mostre insuficiente. O captcha via Cloudflare Turnstile que essa v2 previa foi desabilitado nela (nodes desconectados, não removidos) porque o frontend não implementa o widget Turnstile — ver nota "Instruções" dentro do próprio arquivo do workflow.
 
 - **Frontend → Route Handler:** `POST /api/webhooks/contato`, body = `ContactFormSchema`
 - **Route Handler → n8n:**
@@ -45,7 +49,7 @@ Ao submeter o formulário de contato, o frontend envia os dados para um Route Ha
 - **Credenciais:** armazenadas em `produto-web/.env` (server-only, sem prefixo `NEXT_PUBLIC_`) — `N8N_CONTACT_WEBHOOK_URL` e `N8N_CONTACT_WEBHOOK_TOKEN`. Nunca commitadas; nunca referenciadas por valor literal em código ou documentação.
 - **Resposta esperada:** o workflow n8n responde via node de resposta do Webhook indicando sucesso/erro; o Route Handler repassa esse resultado ao frontend, que alterna entre os estados "enviando" → "enviado"/erro (ver seção 5, estados do formulário)
 
-> ⚠️ **URL de teste:** o valor atual de `N8N_CONTACT_WEBHOOK_URL` aponta para o path `webhook-test/contato-2ad`, o endpoint de teste do n8n — só responde enquanto o workflow está aberto no editor com "Listen for test event" ativo. Para produção, o workflow precisa estar **ativado** e a variável de ambiente atualizada para o path de produção `webhook/contato-2ad` (sem `-test`).
+`N8N_CONTACT_WEBHOOK_URL` aponta para o path de produção `webhook/contato-2ad` (sem `-test`) — o workflow correspondente precisa estar **ativado** no n8n para responder.
 
 ---
 

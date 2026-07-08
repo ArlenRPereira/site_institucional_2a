@@ -11,10 +11,10 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-border bg-surface">
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="#inicio" className="shrink-0" onClick={() => setIsMenuOpen(false)}>
-          <Logo withWordmark />
+          <Logo />
         </Link>
 
         <nav aria-label="Navegação principal" className="hidden items-center gap-8 lg:flex">

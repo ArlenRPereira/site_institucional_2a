@@ -34,7 +34,7 @@
         "replyTo": "={{ $json.body.email }}",
         "subject": "=Novo contato do site — {{ $json.body.nome }} ({{ $json.body.interesse }})",
         "emailFormat": "html",
-        "html": "=<h2>Novo contato recebido pelo site</h2>\n<p><strong>Nome:</strong> {{ $json.body.nome }}</p>\n<p><strong>Email:</strong> {{ $json.body.email }}</p>\n<p><strong>Telefone:</strong> {{ $json.body.telefone }}</p>\n<p><strong>Empresa:</strong> {{ $json.body.empresa }}</p>\n<p><strong>Interesse:</strong> {{ $json.body.interesse }}</p>\n<p><strong>Mensagem:</strong><br>{{ $json.body.mensagem.replace(/\\n/g, '<br>') }}</p>",
+        "html": "=<h2>Novo contato recebido pelo site</h2>\n<p><strong>Nome:</strong> {{ $json.body.nome }}</p>\n<p><strong>Email:</strong> {{ $json.body.email }}</p>\n<p><strong>Telefone:</strong> {{ $json.body.telefone }}</p>\n<p><strong>Empresa:</strong> {{ $json.body.empresa }}</p>\n<p><strong>Interesse:</strong> {{ $json.body.interesse }}</p>\n<p><strong>Momento do projeto:</strong> {{ $json.body.momentoProjeto }}</p>\n<p><strong>Mensagem:</strong><br>{{ $json.body.mensagem.replace(/\\n/g, '<br>') }}</p>",
         "options": {}
       },
       "id": "a1b2c3d4-0000-4000-8000-000000000003",

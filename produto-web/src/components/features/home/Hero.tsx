@@ -22,6 +22,8 @@ export function Hero() {
 
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-on-dark-secondary">{hero.subtitle}</p>
 
+        <p className="mx-auto mt-4 max-w-2xl text-base font-semibold text-brand-300">{hero.complement}</p>
+
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link href={hero.primaryCta.href} className={buttonVariants({ variant: "primary" })}>
             {hero.primaryCta.label}
@@ -32,8 +34,8 @@ export function Hero() {
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          {hero.badges.map((label) => (
-            <Badge key={label} variant="on-dark" dot>
+          {hero.badges.map(({ label, dotClassName }) => (
+            <Badge key={label} variant="on-dark" dot dotClassName={dotClassName}>
               {label}
             </Badge>
           ))}

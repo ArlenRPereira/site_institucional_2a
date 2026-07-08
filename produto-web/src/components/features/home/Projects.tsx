@@ -5,7 +5,7 @@ import { possibleProjects, projectsSection } from "@/data/projects";
 
 export function Projects() {
   return (
-    <section id="projetos" className="bg-background py-24">
+    <section id="exemplos" className="bg-background py-24">
       <Container>
         <SectionHeading eyebrow={projectsSection.eyebrow} title={projectsSection.title} />
         <p className="mx-auto mt-4 max-w-2xl text-center text-base italic text-text-secondary">

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(env.appUrl),
   applicationName: APP_NAME,
   title: {
-    default: `${APP_NAME} | SaaS, IA, ESG e Engenharia Social`,
+    default: `${APP_NAME} | MVPs, Sistemas, IA, ESG e Projetos Sociais`,
     template: `%s | ${APP_NAME}`,
   },
   description: company.seoDescription,

@@ -9,9 +9,9 @@ export const solutions: {
 }[] = [
   {
     key: "tecnologia",
-    title: "Tecnologia, SaaS e IA",
+    title: "Tecnologia e Produtos Digitais",
     description:
-      "Da ideia ao produto digital. Apoiamos empresas e empreendedores desde a concepção da solução até a arquitetura, desenvolvimento, implantação e evolução de sistemas, plataformas SaaS, Micro SaaS, automações e soluções com inteligência artificial.",
+      "Ajudamos empresas e startups a transformar ideias e processos manuais em MVPs, sistemas sob medida e plataformas digitais seguras, escaláveis e prontas para crescer.",
     href: "#tecnologia",
     accent: "bright",
   },
@@ -32,36 +32,31 @@ export const solutionsSection = {
 
 export const techDetail = {
   id: "tecnologia",
-  eyebrow: "Tecnologia, SaaS e IA",
-  title: "Da ideia ao produto digital",
+  eyebrow: "Tecnologia e Produtos Digitais",
+  title: "Da ideia ao produto digital pronto para crescer",
   description:
-    "Apoiamos empresas e empreendedores em todo o ciclo de vida do produto digital — da concepção à evolução contínua, com foco em plataformas SaaS, Micro SaaS, automação e inteligência artificial.",
-  steps: [
-    "Ideia",
-    "Descoberta",
-    "MVP",
-    "Arquitetura",
-    "Desenvolvimento",
-    "Automação e IA",
-    "Deploy",
-    "Evolução",
-  ],
-  services: [
-    "Descoberta e discovery de produto",
-    "Arquitetura de software e sistemas",
-    "Desenvolvimento de plataformas SaaS",
-    "Desenvolvimento de Micro SaaS",
-    "Aplicações web sob medida",
-    "Aplicativos mobile",
-    "Automação de processos com IA",
-    "Integração de sistemas e APIs",
+    "Apoiamos empresas, startups e instituições a transformar ideias, processos manuais e oportunidades de negócio em soluções digitais viáveis, seguras e escaláveis — da concepção à evolução contínua.",
+  ofertasComerciais: [
+    "MVP para startups e validação de ideias",
+    "Produto digital para apresentação a investidores",
+    "Sistema sob medida para empresas",
+    "Plataforma robusta, segura e escalável",
+    "Automação de processos com inteligência artificial",
+    "Aplicativos e portais digitais",
+    "Modernização de sistemas e operações digitais",
     "Dashboards e painéis de indicadores",
-    "Modernização de sistemas legados",
-    "Consultoria técnica e revisão de arquitetura",
-    "Prototipação e MVP",
-    "DevOps e infraestrutura em nuvem",
-    "Segurança e boas práticas de desenvolvimento",
-    "Evolução contínua e suporte técnico",
+    "Integrações entre sistemas",
+  ],
+  capacidadesTecnicas: [
+    "Arquitetura de Software",
+    "SaaS e Micro SaaS",
+    "Aplicações Web",
+    "Aplicativos Mobile",
+    "APIs e Integrações",
+    "Automação com n8n",
+    "Agentes de IA",
+    "Cloud e DevOps",
+    "Dashboards e Indicadores",
   ],
 } as const;
 
@@ -71,7 +66,6 @@ export const esgDetail = {
   title: "Do diagnóstico ao impacto mensurável",
   description:
     "Estruturamos projetos ESG, desenvolvimento institucional e gestão de projetos sociais para prefeituras, instituições e organizações — do diagnóstico à prestação de contas.",
-  steps: ["Diagnóstico", "Planejamento", "Execução", "Indicadores", "Impacto", "Prestação de contas"],
   services: [
     "Diagnóstico institucional e territorial",
     "Planejamento estratégico de projetos sociais",

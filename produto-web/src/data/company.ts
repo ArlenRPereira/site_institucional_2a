@@ -6,33 +6,30 @@ export const company = {
   email: "contato@2adesenvolvimento.com.br",
   attendance: "Empresas, instituições e prefeituras em todo o Brasil",
   seoDescription:
-    "Tecnologia, inovação e impacto social para empresas e governos. Desenvolvemos soluções digitais, SaaS, automações com inteligência artificial e projetos ESG.",
-  ogDescription: "Tecnologia, inovação e impacto social para empresas e governos.",
+    "A 2A Desenvolvimento e Tecnologia ajuda empresas, startups e instituições a criar MVPs, sistemas sob medida, plataformas digitais, automações com IA e projetos ESG com impacto mensurável.",
+  ogDescription: "Tecnologia, inovação e impacto social para empresas, startups, instituições e governos.",
 } as const;
 
 export const hero = {
   eyebrow: "2A Desenvolvimento e Tecnologia",
-  title: "Tecnologia, inovação e impacto social para empresas e governos.",
+  title: "Transformamos ideias e processos em soluções digitais prontas para crescer.",
   subtitle:
-    "Desenvolvemos soluções digitais, SaaS, automações com inteligência artificial e projetos ESG voltados para empresas, instituições e prefeituras.",
-  primaryCta: { label: "Conheça nossas soluções", href: "#solucoes" },
-  secondaryCta: { label: "Fale conosco", href: "#contato" },
-  badges: ["Tecnologia, SaaS & IA", "ESG & Projetos Sociais"],
-} as const;
-
-export const about = {
-  eyebrow: "Sobre a 2A",
-  title: "Da ideia ao produto digital. Do projeto social ao impacto mensurável.",
-  paragraphs: [
-    "A 2A Desenvolvimento e Tecnologia Ltda nasceu com o propósito de unir tecnologia, inovação e impacto social em soluções práticas para empresas, instituições e governos.",
-    "Atuamos em duas frentes complementares: uma especializada em tecnologia, SaaS, Micro SaaS, automação e inteligência artificial; e outra dedicada a projetos ESG, desenvolvimento institucional e gestão de projetos sociais voltados ao setor público e organizações sociais.",
-    "Nosso trabalho parte de uma premissa simples: boas soluções precisam ser úteis, viáveis e bem executadas.",
+    "A 2A Desenvolvimento e Tecnologia ajuda empresas, startups e instituições a criar MVPs, sistemas sob medida, plataformas digitais, automações e soluções com inteligência artificial.",
+  complement: "Da ideia à validação. Da validação ao produto. Do produto à escala.",
+  primaryCta: { label: "Solicitar uma conversa inicial", href: "#contato" },
+  secondaryCta: { label: "Conhecer soluções", href: "#solucoes" },
+  badges: [
+    { label: "Tecnologia e Produtos Digitais", dotClassName: "bg-info" },
+    { label: "ESG & Projetos Sociais", dotClassName: undefined },
   ],
 } as const;
 
-export const forWhom = {
-  eyebrow: "Para quem atendemos",
-  audiences: ["Empresas", "Instituições", "Startups", "Prefeituras"],
+export const diagnostico = {
+  eyebrow: "Diagnóstico inicial",
+  title: "Solicite uma conversa inicial sobre seu projeto",
+  description:
+    "Em uma conversa inicial, entendemos sua ideia, processo ou desafio e indicamos o melhor caminho para transformar isso em uma solução digital, projeto estruturado ou iniciativa com impacto mensurável.",
+  cta: { label: "Solicitar conversa inicial", href: "#contato" },
 } as const;
 
 export const contactSection = {
@@ -50,7 +47,7 @@ export const privacyPolicy = {
   sections: [
     {
       heading: "Quais dados coletamos",
-      body: "Coletamos os dados informados voluntariamente no formulário de contato do site: nome, e-mail, telefone (opcional), empresa ou instituição (opcional), tipo de interesse e mensagem.",
+      body: "Coletamos os dados informados voluntariamente no formulário de contato do site: nome, e-mail, telefone (opcional), empresa/instituição/prefeitura (opcional), tipo de interesse, momento do projeto e mensagem.",
     },
     {
       heading: "Finalidade do tratamento",
@@ -58,7 +55,7 @@ export const privacyPolicy = {
     },
     {
       heading: "Como os dados são processados",
-      body: "O envio do formulário é repassado, via integração server-side, a um workflow responsável por validar, sanitizar e encaminhar o contato por e-mail à nossa equipe comercial. Nenhum dado é armazenado em banco de dados pela aplicação do site.",
+      body: "O envio do formulário é repassado, via integração server-side, a um workflow responsável por encaminhar o contato por e-mail à nossa equipe comercial. Nenhum dado é armazenado em banco de dados pela aplicação do site.",
     },
     {
       heading: "Como solicitar remoção",

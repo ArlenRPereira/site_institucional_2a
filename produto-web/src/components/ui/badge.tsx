@@ -13,12 +13,13 @@ const badgeVariants = cva("inline-flex items-center gap-2 rounded-full px-4 py-2
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
   dot?: boolean;
+  dotClassName?: string;
 }
 
-export function Badge({ className, variant, dot, children, ...props }: BadgeProps) {
+export function Badge({ className, variant, dot, dotClassName, children, ...props }: BadgeProps) {
   return (
     <span className={cn(badgeVariants({ variant }), className)} {...props}>
-      {dot && <span aria-hidden="true" className="size-2 rounded-full bg-brand-400" />}
+      {dot && <span aria-hidden="true" className={cn("size-2 rounded-full bg-brand-400", dotClassName)} />}
       {children}
     </span>
   );

@@ -2,8 +2,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Exibe o nome da empresa ao lado da marca. Usado no header. */
-  withWordmark?: boolean;
   /**
    * Altura da marca em pixels.
    * @default 48
@@ -11,7 +9,7 @@ export interface LogoProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-export function Logo({ className, withWordmark, size = 48, ...props }: LogoProps) {
+export function Logo({ className, size = 48, ...props }: LogoProps) {
   return (
     <div className={cn("flex items-center gap-3", className)} {...props}>
       <Image
@@ -23,7 +21,6 @@ export function Logo({ className, withWordmark, size = 48, ...props }: LogoProps
         style={{ height: size, width: "auto" }}
         className="shrink-0 rounded-lg shadow-sm"
       />
-      {withWordmark && <span className="text-lg font-bold text-text-primary">2A Desenvolvimento</span>}
     </div>
   );
 }

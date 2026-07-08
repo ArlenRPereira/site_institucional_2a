@@ -2,10 +2,9 @@ import type { NavItem } from "@/types";
 
 export const mainNav: NavItem[] = [
   { label: "Início", href: "#inicio" },
-  { label: "Sobre", href: "#sobre" },
+  { label: "Para quem", href: "#publicos" },
   { label: "Soluções", href: "#solucoes" },
   { label: "Diferenciais", href: "#diferenciais" },
-  { label: "Projetos", href: "#projetos" },
   { label: "Contato", href: "#contato" },
 ];
 

@@ -1,5 +1,5 @@
 export const projectsSection = {
-  eyebrow: "Projetos possíveis",
+  eyebrow: "Exemplos de soluções",
   title: "O que podemos desenvolver",
   disclaimer: "Exemplos de tipos de projeto — não são cases reais já entregues.",
 } as const;

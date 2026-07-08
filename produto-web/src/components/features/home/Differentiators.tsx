@@ -1,8 +1,6 @@
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { Badge } from "@/components/ui/badge";
 import { differentiators, differentiatorsSection } from "@/data/services";
-import { forWhom } from "@/data/company";
 
 export function Differentiators() {
   return (
@@ -18,17 +16,6 @@ export function Differentiators() {
             </li>
           ))}
         </ul>
-
-        <div id="para-quem" className="mt-16 text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-text-on-dark-muted">{forWhom.eyebrow}</p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-            {forWhom.audiences.map((audience) => (
-              <Badge key={audience} variant="on-dark" dot>
-                {audience}
-              </Badge>
-            ))}
-          </div>
-        </div>
       </Container>
     </section>
   );

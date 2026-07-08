@@ -7,7 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { CheckIcon } from "@/components/ui/icons";
-import { contactFormSchema, CONTACT_INTERESSE_OPTIONS, type ContactFormInput } from "@/lib/validations/contact";
+import {
+  contactFormSchema,
+  CONTACT_INTERESSE_OPTIONS,
+  CONTACT_MOMENTO_OPTIONS,
+  type ContactFormInput,
+} from "@/lib/validations/contact";
 import { contactSection } from "@/data/company";
 
 type FormValues = {
@@ -16,6 +21,7 @@ type FormValues = {
   telefone: string;
   empresa: string;
   interesse: ContactFormInput["interesse"] | "";
+  momentoProjeto: ContactFormInput["momentoProjeto"] | "";
   mensagem: string;
 };
 
@@ -25,6 +31,7 @@ const initialValues: FormValues = {
   telefone: "",
   empresa: "",
   interesse: "",
+  momentoProjeto: "",
   mensagem: "",
 };
 
@@ -118,8 +125,14 @@ export function ContactForm() {
         className="absolute left-[-9999px] top-auto size-px overflow-hidden"
       />
 
+      <p className="text-sm text-text-secondary">
+        Campos marcados com <span className="text-danger">*</span> são obrigatórios.
+      </p>
+
       <div>
-        <Label htmlFor="nome">Nome</Label>
+        <Label htmlFor="nome" required>
+          Nome
+        </Label>
         <Input
           id="nome"
           name="nome"
@@ -128,6 +141,7 @@ export function ContactForm() {
           value={values.nome}
           onChange={(e) => updateField("nome", e.target.value)}
           invalid={!!errors.nome}
+          required
           aria-describedby={errors.nome ? "nome-error" : undefined}
         />
         {errors.nome && (
@@ -138,7 +152,9 @@ export function ContactForm() {
       </div>
 
       <div>
-        <Label htmlFor="email">E-mail</Label>
+        <Label htmlFor="email" required>
+          E-mail
+        </Label>
         <Input
           id="email"
           name="email"
@@ -148,6 +164,7 @@ export function ContactForm() {
           value={values.email}
           onChange={(e) => updateField("email", e.target.value)}
           invalid={!!errors.email}
+          required
           aria-describedby={errors.email ? "email-error" : undefined}
         />
         {errors.email && (
@@ -159,7 +176,9 @@ export function ContactForm() {
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div>
-          <Label htmlFor="telefone">Telefone / WhatsApp</Label>
+          <Label htmlFor="telefone" required className="sm:min-h-10">
+            Telefone / WhatsApp
+          </Label>
           <Input
             id="telefone"
             name="telefone"
@@ -168,15 +187,25 @@ export function ContactForm() {
             placeholder="(00) 00000-0000"
             value={values.telefone}
             onChange={(e) => updateField("telefone", e.target.value)}
+            invalid={!!errors.telefone}
+            required
+            aria-describedby={errors.telefone ? "telefone-error" : undefined}
           />
+          {errors.telefone && (
+            <p id="telefone-error" role="alert" className="mt-1.5 text-sm text-danger">
+              {errors.telefone}
+            </p>
+          )}
         </div>
         <div>
-          <Label htmlFor="empresa">Empresa / Instituição</Label>
+          <Label htmlFor="empresa" className="sm:min-h-10">
+            Organização (opcional)
+          </Label>
           <Input
             id="empresa"
             name="empresa"
             autoComplete="organization"
-            placeholder="Nome da organização"
+            placeholder="Empresa, instituição ou prefeitura"
             value={values.empresa}
             onChange={(e) => updateField("empresa", e.target.value)}
           />
@@ -184,13 +213,16 @@ export function ContactForm() {
       </div>
 
       <div>
-        <Label htmlFor="interesse">Tipo de interesse</Label>
+        <Label htmlFor="interesse" required>
+          Tipo de interesse
+        </Label>
         <Select
           id="interesse"
           name="interesse"
           value={values.interesse}
           onChange={(e) => updateField("interesse", e.target.value as FormValues["interesse"])}
           invalid={!!errors.interesse}
+          required
           aria-describedby={errors.interesse ? "interesse-error" : undefined}
         >
           <option value="" disabled>
@@ -205,6 +237,35 @@ export function ContactForm() {
         {errors.interesse && (
           <p id="interesse-error" role="alert" className="mt-1.5 text-sm text-danger">
             {errors.interesse}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <Label htmlFor="momentoProjeto" required>
+          Momento do projeto
+        </Label>
+        <Select
+          id="momentoProjeto"
+          name="momentoProjeto"
+          value={values.momentoProjeto}
+          onChange={(e) => updateField("momentoProjeto", e.target.value as FormValues["momentoProjeto"])}
+          invalid={!!errors.momentoProjeto}
+          required
+          aria-describedby={errors.momentoProjeto ? "momentoProjeto-error" : undefined}
+        >
+          <option value="" disabled>
+            Selecione...
+          </option>
+          {CONTACT_MOMENTO_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </Select>
+        {errors.momentoProjeto && (
+          <p id="momentoProjeto-error" role="alert" className="mt-1.5 text-sm text-danger">
+            {errors.momentoProjeto}
           </p>
         )}
       </div>
@@ -226,6 +287,12 @@ export function ContactForm() {
           </p>
         )}
       </div>
+
+      {Object.keys(errors).length > 0 && (
+        <p role="alert" className="rounded-lg border-2 border-danger bg-surface px-4 py-3 text-sm font-medium text-danger">
+          Preencha todos os campos obrigatórios antes de enviar.
+        </p>
+      )}
 
       <Button type="submit" className="w-full" isLoading={status === "submitting"}>
         {status === "submitting" ? "Enviando..." : "Enviar mensagem"}

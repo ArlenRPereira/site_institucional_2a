@@ -35,14 +35,18 @@ export async function POST(request: Request) {
 
     const payload = await n8nResponse.json().catch(() => null);
 
-    if (!n8nResponse.ok) {
+    if (!n8nResponse.ok || !payload) {
+      console.error("[webhooks/contato] resposta inesperada do n8n", {
+        status: n8nResponse.status,
+        payload,
+      });
       return NextResponse.json(
         { success: false, message: payload?.message ?? "Não foi possível enviar sua mensagem agora." },
-        { status: n8nResponse.status }
+        { status: n8nResponse.ok ? 502 : n8nResponse.status }
       );
     }
 
-    return NextResponse.json(payload ?? { success: true });
+    return NextResponse.json(payload);
   } catch {
     return NextResponse.json(
       { success: false, message: "Não foi possível enviar sua mensagem agora." },

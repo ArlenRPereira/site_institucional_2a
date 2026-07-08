@@ -12,10 +12,10 @@ export const company = {
 
 export const hero = {
   eyebrow: "2A Desenvolvimento e Tecnologia",
-  title: "Transformamos ideias e processos em soluções digitais prontas para crescer.",
+  title: "Unimos tecnologia, produtos digitais e projetos sociais para transformar ideias, processos e iniciativas em resultados mensuráveis.",
   subtitle:
-    "A 2A Desenvolvimento e Tecnologia ajuda empresas, startups e instituições a criar MVPs, sistemas sob medida, plataformas digitais, automações e soluções com inteligência artificial.",
-  complement: "Da ideia à validação. Da validação ao produto. Do produto à escala.",
+    "A 2A Desenvolvimento e Tecnologia ajuda empresas, startups, prefeituras e instituições a criar soluções digitais, validar MVPs, automatizar operações, estruturar projetos ESG e gerir programas sociais com indicadores, governança e impacto.",
+  complement: "Da ideia à validação. Do projeto à execução. Da operação ao impacto mensurável.",
   primaryCta: { label: "Solicitar uma conversa inicial", href: "#contato" },
   secondaryCta: { label: "Conhecer soluções", href: "#solucoes" },
   badges: [

@@ -1,6 +1,6 @@
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/common/SectionHeading";
-import { problems, problemsSection } from "@/data/problems";
+import { problemGroups, problemsSection } from "@/data/problems";
 
 export function Problems() {
   return (
@@ -8,14 +8,21 @@ export function Problems() {
       <Container>
         <SectionHeading eyebrow={problemsSection.eyebrow} title={problemsSection.title} />
 
-        <ul role="list" className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-          {problems.map((problem, index) => (
-            <li key={problem} className="flex items-start gap-4">
-              <span className="text-sm font-bold text-brand-600">{String(index + 1).padStart(2, "0")}</span>
-              <span className="text-base leading-relaxed text-text-secondary">{problem}</span>
-            </li>
+        <div className="mx-auto mt-12 grid max-w-5xl grid-cols-1 gap-x-12 gap-y-12 lg:grid-cols-2">
+          {problemGroups.map((group) => (
+            <div key={group.title}>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-brand-600">{group.title}</h3>
+              <ul role="list" className="mt-5 space-y-5">
+                {group.items.map((item, index) => (
+                  <li key={item} className="flex items-start gap-4">
+                    <span className="text-sm font-bold text-brand-600">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="text-base leading-relaxed text-text-secondary">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       </Container>
     </section>
   );

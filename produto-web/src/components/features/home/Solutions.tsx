@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { CodeIcon, LeafIcon, ArrowRightIcon } from "@/components/ui/icons";
@@ -34,13 +33,13 @@ export function Solutions() {
                 </div>
                 <h3 className="mt-6 text-2xl font-bold text-text-primary">{solution.title}</h3>
                 <p className="mt-3 text-base leading-relaxed text-text-secondary">{solution.description}</p>
-                <Link
+                <a
                   href={solution.href}
                   className="mt-5 inline-flex items-center gap-1.5 text-base font-semibold text-brand-600 transition-colors duration-normal hover:text-brand-700"
                 >
                   Saiba mais
                   <ArrowRightIcon className="size-4" />
-                </Link>
+                </a>
               </div>
             );
           })}

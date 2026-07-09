@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,12 +24,12 @@ export function Hero() {
         <p className="mx-auto mt-4 max-w-2xl text-base font-semibold text-brand-300">{hero.complement}</p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Link href={hero.primaryCta.href} className={buttonVariants({ variant: "primary" })}>
+          <a href={hero.primaryCta.href} className={buttonVariants({ variant: "primary" })}>
             {hero.primaryCta.label}
-          </Link>
-          <Link href={hero.secondaryCta.href} className={cn(buttonVariants({ variant: "outline-on-dark" }))}>
+          </a>
+          <a href={hero.secondaryCta.href} className={cn(buttonVariants({ variant: "outline-on-dark" }))}>
             {hero.secondaryCta.label}
-          </Link>
+          </a>
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

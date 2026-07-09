@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { mainNav } from "@/data/navigation";
 import { Logo } from "@/components/ui/logo";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,25 +12,25 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-surface">
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="#inicio" className="shrink-0" onClick={() => setIsMenuOpen(false)}>
+        <a href="#inicio" className="shrink-0" onClick={() => setIsMenuOpen(false)}>
           <Logo />
-        </Link>
+        </a>
 
         <nav aria-label="Navegação principal" className="hidden items-center gap-8 lg:flex">
           {mainNav.map((item) => (
-            <Link
+            <a
               key={item.href}
               href={item.href}
               className="text-sm font-medium text-text-primary transition-colors duration-normal hover:text-brand-600"
             >
               {item.label}
-            </Link>
+            </a>
           ))}
         </nav>
 
-        <Link href="#contato" className={cn(buttonVariants({ variant: "primary", size: "sm" }), "hidden lg:inline-flex")}>
+        <a href="#contato" className={cn(buttonVariants({ variant: "primary", size: "sm" }), "hidden lg:inline-flex")}>
           Solicitar contato
-        </Link>
+        </a>
 
         <button
           type="button"
@@ -67,23 +66,23 @@ export function Header() {
           <ul className="flex flex-col">
             {mainNav.map((item) => (
               <li key={item.href}>
-                <Link
+                <a
                   href={item.href}
                   onClick={() => setIsMenuOpen(false)}
                   className="block py-3 text-base font-medium text-text-primary transition-colors duration-normal hover:text-brand-600"
                 >
                   {item.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
-          <Link
+          <a
             href="#contato"
             onClick={() => setIsMenuOpen(false)}
             className={cn(buttonVariants({ variant: "primary" }), "mt-2 w-full")}
           >
             Solicitar contato
-          </Link>
+          </a>
         </nav>
       )}
     </header>

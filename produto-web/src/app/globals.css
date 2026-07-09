@@ -9,6 +9,13 @@ html {
   scroll-padding-top: 5rem;
 }
 
+/* Respeita usuários que preferem menos animação (acessibilidade) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-text-primary);

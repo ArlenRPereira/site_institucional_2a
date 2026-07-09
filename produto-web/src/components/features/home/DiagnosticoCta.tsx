@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { buttonVariants } from "@/components/ui/button";
 import { diagnostico } from "@/data/company";
@@ -13,9 +12,9 @@ export function DiagnosticoCta() {
           {diagnostico.title}
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-brand-100">{diagnostico.description}</p>
-        <Link href={diagnostico.cta.href} className={cn(buttonVariants({ variant: "outline-on-dark" }), "mt-8")}>
+        <a href={diagnostico.cta.href} className={cn(buttonVariants({ variant: "outline-on-dark" }), "mt-8")}>
           {diagnostico.cta.label}
-        </Link>
+        </a>
       </Container>
     </section>
   );

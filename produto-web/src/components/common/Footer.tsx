@@ -4,8 +4,16 @@ import { Logo } from "@/components/ui/logo";
 import { mainNav, footerInstitucional } from "@/data/navigation";
 import { company } from "@/data/company";
 
+const MESES = [
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+] as const;
+
 export function Footer() {
-  const year = new Date().getFullYear();
+  // Avaliado no build (home é estática) → atualiza a cada deploy de produção.
+  const now = new Date();
+  const year = now.getFullYear();
+  const versaoLabel = `Versão ${process.env.NEXT_PUBLIC_APP_VERSION} — ${MESES[now.getMonth()]} de ${year}`;
 
   return (
     <footer className="bg-surface-dark">
@@ -16,6 +24,7 @@ export function Footer() {
             <p className="mt-4 max-w-xs text-base text-text-on-dark-secondary">
               Tecnologia, inovação e impacto social para empresas e governos.
             </p>
+            <p className="mt-6 text-sm text-text-on-dark-muted">{versaoLabel}</p>
           </div>
 
           <div>
@@ -23,12 +32,12 @@ export function Footer() {
             <ul className="mt-4 space-y-3">
               {mainNav.map((item) => (
                 <li key={item.href}>
-                  <Link
+                  <a
                     href={item.href}
                     className="text-base text-text-on-dark-secondary transition-colors duration-normal hover:text-white"
                   >
                     {item.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>

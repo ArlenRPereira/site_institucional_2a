@@ -1,0 +1,26 @@
+# Dependências e artefatos de build (reinstalados/reconstruídos dentro da imagem)
+node_modules
+.next
+out
+dist
+.turbo
+
+# Ambiente e segredos — nunca entram na imagem (definidos no EasyPanel)
+.env
+.env.*
+!.env.example
+
+# Metadados de dev que não afetam o build
+.git
+.github
+.claude
+.mcp.json
+*.tsbuildinfo
+coverage
+prompt_screen
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode
+.idea

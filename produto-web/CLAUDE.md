@@ -26,9 +26,9 @@ O objetivo é oferecer a experiência completa do produto em navegador desktop e
 | Zod                      | 3.x                   | Validação de schema      |
 | Zustand                  | 5.x                   | Estado global client     |
 | class-variance-authority | 1.x                   | Variantes de componentes |
-| Node.js                  | 20 LTS                | Runtime (VPS)            |
-| PM2                      | latest                | Process manager (VPS)    |
-| Nginx                    | latest                | Reverse proxy (VPS)      |
+| Node.js                  | 20 LTS                | Runtime (container)      |
+| Docker                   | multi-stage           | Empacotamento (imagem `output: standalone`) |
+| EasyPanel                | —                     | Deploy/PaaS na VPS Hostinger (Traefik + Let's Encrypt) |
 
 ---
 
@@ -65,7 +65,8 @@ web-app/
 ├── next.config.ts
 ├── tailwind.config.ts
 ├── tsconfig.json
-├── ecosystem.config.cjs              ← PM2 (produção VPS)
+├── Dockerfile                        ← build da imagem (deploy EasyPanel)
+├── .dockerignore                     ← exclusões do contexto de build
 ├── package.json
 │
 ├── .claude/
@@ -251,15 +252,18 @@ SUPABASE_PROJECT_REF=[project-ref]
 GITHUB_PERSONAL_ACCESS_TOKEN=ghp_...
 ```
 
-### `.env.production` (VPS — nunca commitar, editar via SSH)
+### Variáveis de produção (EasyPanel → Environment)
 
-Mesmo conjunto de variáveis acima, com valores de produção. Localizado em `/var/www/web-app/.env.production` no VPS.
-
-Após editar no VPS:
+As variáveis de produção **não vivem em arquivo no VPS** — ficam na aba **Environment** do serviço `web` no EasyPanel e são injetadas no container em runtime (e como build args). Conjunto atual:
 
 ```bash
-pm2 reload web-app --update-env
+NEXT_PUBLIC_APP_URL=https://2adesenvolvimento.com.br
+N8N_CONTACT_WEBHOOK_URL=https://...easypanel.host/webhook/contato-2ad
+N8N_CONTACT_WEBHOOK_TOKEN=...        # segredo — rotacionar se vazar
+PORT=3000                           # obrigatório (ver seção "Deploy")
 ```
+
+Após editar, clicar **Implantar** para aplicar.
 
 ---
 
@@ -315,38 +319,31 @@ npm run test:coverage  # jest --coverage
 
 ---
 
-## Deploy — Hostinger VPS
+## Deploy — Hostinger VPS via EasyPanel
+
+Produção roda como **container Docker gerenciado pelo EasyPanel** (PaaS self-hosted na VPS da Hostinger). O EasyPanel builda o `Dockerfile`, faz o reverse proxy (Traefik) e emite o SSL (Let's Encrypt) automaticamente — **não há PM2, Nginx nem Certbot manuais**.
 
 ```
-git push origin main
+push na branch de deploy (main)
       ↓
-GitHub Actions (.github/workflows/deploy.yml)
-      ├── npm ci
-      ├── npm run type-check
-      ├── npm run build
-      └── SSH → VPS
-            ├── git pull origin main
-            ├── npm ci --omit=dev
-            ├── npm run build
-            └── pm2 reload web-app --update-env
+EasyPanel — auto-deploy via GitHub
+      ├── clona o repo (Build Path = /produto-web)
+      ├── docker build -f Dockerfile   (multi-stage, output standalone)
+      ├── injeta Environment como build args + runtime (NEXT_PUBLIC_APP_URL, PORT=3000, N8N_*)
+      └── Traefik roteia o domínio → container:3000  (SSL automático)
 ```
 
-**Stack de produção no VPS:**
+**Serviço:** projeto `2a-site-institucional` · serviço `web` (App) · repo `ArlenRPereira/site_institucional_2a` · branch `main` · Build Path `/produto-web` · método Dockerfile · domínio `2adesenvolvimento.com.br` · VPS `82.25.77.31`.
 
-- Ubuntu 22.04 LTS
-- Node.js 20 (nvm)
-- PM2 em modo cluster (`ecosystem.config.cjs`)
-- Nginx como reverse proxy (porta 80/443 → 3000)
-- SSL via Certbot (Let's Encrypt — renovação automática)
+**Pegadinhas (checar antes de debugar deploy):**
 
-**Comandos de operação:**
+- **`PORT=3000` é obrigatório no Environment.** O EasyPanel injeta `PORT=80` por padrão e sobrescreve o `ENV PORT=3000` do Dockerfile; os domínios apontam para `:3000` → sem essa variável dá "Service is not reachable".
+- **Campo "Arquivo" (aba Build) = só `Dockerfile`.** Variáveis vão no Environment, nunca nesse campo (senão o `-f` do docker build aponta para um arquivo inexistente).
+- **`NEXT_PUBLIC_APP_URL` é embutido no build.** O EasyPanel repassa o Environment como build arg automaticamente — não há campo "Build Args" separado a preencher.
 
-```bash
-pm2 status                        # estado dos processos
-pm2 logs web-app --lines 100      # logs recentes
-pm2 reload web-app                # reload zero-downtime
-nginx -t && systemctl reload nginx # aplicar mudança de config Nginx
-```
+**Operação (aba do serviço no EasyPanel):** **Implantar** (deploy manual) · **Logs** (confirmar `Network: http://0.0.0.0:3000`) · **Environment** (variáveis de produção). Redeploy é automático a cada push na branch configurada.
+
+> Fluxo completo, validação local da imagem e configuração de DNS: ver `README.md` (seção "Deploy — Hostinger VPS via EasyPanel").
 
 ---
 
@@ -360,7 +357,7 @@ Mencione o agente pelo nome na conversa ou deixe o Claude delegar automaticament
 | `navigation-architect` | Modelar fluxos de rota, middleware, route groups, redirects                   |
 | `api-client-agent`     | Criar services, hooks, integração Supabase, realtime, Server Actions          |
 | `seo-optimizer`        | Metadata, OG image, sitemap, robots, JSON-LD structured data                  |
-| `build-doctor`         | Erros de TypeScript, falhas de build, configuração Nginx/PM2, diagnóstico VPS |
+| `build-doctor`         | Erros de TypeScript, falhas de build, Dockerfile, configuração EasyPanel, diagnóstico VPS |
 | `perf-analyzer`        | Core Web Vitals, bundle size, re-renders, otimização de RSC e imagens         |
 
 ---
@@ -440,7 +437,7 @@ Mencione o agente pelo nome na conversa ou deixe o Claude delegar automaticament
 ❌ Hardcodar cores, espaçamentos ou fontes fora dos tokens
 ❌ Commitar qualquer arquivo .env
 ❌ Dar git push --force na branch main
-❌ Rodar pm2 delete ou pm2 kill em produção sem downtime planejado
+❌ Remover a variável PORT=3000 do Environment do EasyPanel (o app cai em :80 e o Traefik perde o container)
 ❌ Editar src/types/supabase.ts manualmente
 ```
 
@@ -452,7 +449,7 @@ Mencione o agente pelo nome na conversa ou deixe o Claude delegar automaticament
 | ---- | ----------------------------------- | ---------------------------------------------------------------- |
 | —    | App Router (não Pages Router)       | RSC, Suspense nativo, route groups, melhor DX                    |
 | —    | Supabase SSR com `@supabase/ssr`    | Sessão via cookie compartilhada entre RSC e client               |
-| —    | Hostinger VPS + PM2 + Nginx         | Controle total, custo previsível, sem cold starts                |
+| 2026-07-09 | Hostinger VPS + EasyPanel (Docker)  | Build do Dockerfile, Traefik + SSL automático, sem PM2/Nginx/Certbot manuais |
 | —    | shadcn/ui como base de componentes  | Copia código (sem dependência), customizável, acessível          |
 | —    | Zustand para estado global client   | API mínima, seletores granulares, sem boilerplate                |
 | —    | `ServiceResult<T>` sem throw        | Erros previsíveis tratados no call site, sem try/catch espalhado |

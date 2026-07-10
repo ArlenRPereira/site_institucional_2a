@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "packageManager": "pnpm@10.27.0",
   "scripts": {
@@ -32,5 +32,10 @@
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.0.0",
     "@eslint/eslintrc": "^3.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss": ">=8.5.10"
+    }
   }
 }

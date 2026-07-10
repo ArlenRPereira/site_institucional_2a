@@ -15,12 +15,13 @@ Esta skill define **quando** e **como** rodar a auditoria de segurança antes de
 
 ## Quando disparar
 
+- **Antes de qualquer `git commit`** neste workspace. Um hook `PreToolUse` em `.claude/settings.json` (script `.claude/hooks/git-commit-security-gate.sh`) roda automaticamente: **bloqueia** o commit se o diff staged contém segredo de alta confiança (arquivo `.env`, chave privada, AWS key, `service_role`) e **injeta um lembrete** para rodar o checklist de raciocínio. Ao ver esse lembrete, rode a seção do checklist correspondente aos arquivos alterados sobre o diff staged (`git diff --cached`).
 - Antes de `git push` de uma branch `feat/`, `fix/` ou `refactor/` em qualquer um dos 4 projetos
 - Antes de abrir ou atualizar um pull request (usuário diz "abrir PR", "criar pull request", "preparar PR", "pode mergear?")
 - Sempre que `SECURITY.md` for editado
 - Quando pedirem explicitamente uma auditoria de segurança do workspace (não apenas de um endpoint isolado — isso é `/audit-security` em `produto-backend`)
 
-**Não** dispare para commits que só tocam docs, testes ou config de tooling sem superfície de execução nova.
+O **gate determinístico de segredos** (hook) roda em todo commit — não há exceção. Já o **checklist OWASP completo** (raciocínio) pode ser dispensado quando o commit só toca docs, testes ou config de tooling sem superfície de execução nova.
 
 ## Runbook
 
